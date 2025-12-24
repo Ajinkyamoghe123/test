@@ -14,12 +14,12 @@ jobs:
             exit 1
           fi
 
-      - name: Query projectV2 via GraphQL
+      - name: Query projectV2 via GraphQL (fixed)
         env:
           GH_TOKEN: ${{ secrets.PROJECT_AUTOMATION_PAT }}
         run: |
-          # create a one-line JSON payload safely (no heredoc)
-          printf '%s' '{"query":"{ user(login: \"Ajinkyamoghe123\") { projectV2(number: 1) { id number title isArchived fields(first: 50) { nodes { id name dataType settings } } items(first: 100) { nodes { id type content { __typename ... on Issue { id number title url } ... on DraftIssue { id title } } } } } } }"}' > payload.json
+          # Build a one-line JSON payload safely (no heredoc problems)
+          printf '%s' '{"query":"{ user(login: \"Ajinkyamoghe123\") { projectV2(number: 1) { id number title closed fields(first: 50) { nodes { __typename ... on ProjectV2SingleSelectField { id name settings options { id name } } ... on ProjectV2IterationField { id name settings configuration { iterations(first: 50) { nodes { id title } } } } ... on ProjectV2Field { id name } } } items(first: 100) { nodes { id content { __typename ... on Issue { id number title url } ... on DraftIssue { id title } } } } } } }"}' > payload.json
 
           echo "Posting GraphQL query..."
           curl -s -H "Authorization: bearer $GH_TOKEN" -H "Content-Type: application/json" -d @payload.json https://api.github.com/graphql | python -m json.tool || true
