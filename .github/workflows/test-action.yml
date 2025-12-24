@@ -3,32 +3,47 @@ name: "Move unfinished issues to the next sprint"
 # Define when this automation should run.
 on:
   schedule:
-    # This CRON expression runs the action every Monday at Midnight UTC.
-    # Adjust this to run at the exact time your sprint usually ends.
-    # Use a tool like crontab.guru to generate the correct expression for your schedule.
+    # This CRON expression runs the action every 5 minutes (keeps the current setting).
     - cron: '*/5 * * * *'
-  # Allows you to run the action manually for testing via the "Actions" tab.
   workflow_dispatch:
+
+# Give the job explicit permissions (repository-level).
+permissions:
+  contents: read
+  issues: write
+  projects: write
 
 jobs:
   move_issues:
     runs-on: ubuntu-latest
     steps:
+      - name: Check for PROJECT_AUTOMATION_PAT secret
+        shell: bash
+        run: |
+          if [ -z "${{ secrets.PROJECT_AUTOMATION_PAT }}" ]; then
+            echo ""
+            echo "ERROR: Repository secret PROJECT_AUTOMATION_PAT is missing."
+            echo ""
+            echo "Create a Personal Access Token (PAT) with the 'repo' and 'projects' scopes and add it as a repository secret named PROJECT_AUTOMATION_PAT."
+            echo ""
+            echo "Steps:"
+            echo "  1) Create a PAT: https://github.com/settings/tokens (choose 'repo' and 'projects' scopes)"
+            echo "  2) Add it to this repository: Settings → Secrets and variables → Actions → New repository secret → Name: PROJECT_AUTOMATION_PAT"
+            echo ""
+            echo "After adding the secret, re-run this workflow."
+            exit 1
+          else
+            echo "Found PROJECT_AUTOMATION_PAT secret. Continuing..."
+          fi
+
       - name: Move items to next iteration
         uses: blombard/move-to-next-iteration@v0.6.1
         with:
-          # --- REQUIRED INPUTS ---
-          # The owner (org or user) of the project
           owner: 'Ajinkyamoghe123'
-          # The project board number (from the URL)
-          number: 1 
-          # The secret token we stored earlier
+          # Project board number from your board URL: https://github.com/users/Ajinkyamoghe123/projects/1 → number: 1
+          number: 1
           token: ${{ secrets.PROJECT_AUTOMATION_PAT }}
-          # The exact name of your iteration field (e.g., 'Sprint')
-          iteration-field: 'iteration' 
-          
-          # --- OPTIONAL INPUTS ---
-          # How to find the new iteration: 'next' automatically finds the next available one.
+          # If your iteration field has a different exact name (capitalization/space-sensitive), update this value
+          iteration-field: 'iteration'
           new-iteration: 'next'
-          # A comma-separated list of status values to move. Must match your field exactly.
           statuses: 'Open,In Progress'
