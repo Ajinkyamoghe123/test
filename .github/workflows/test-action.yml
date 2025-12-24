@@ -1,0 +1,34 @@
+name: "Move unfinished issues to the next sprint"
+
+# Define when this automation should run.
+on:
+  schedule:
+    # This CRON expression runs the action every Monday at Midnight UTC.
+    # Adjust this to run at the exact time your sprint usually ends.
+    # Use a tool like crontab.guru to generate the correct expression for your schedule.
+    - cron: '*/5 * * * *'
+  # Allows you to run the action manually for testing via the "Actions" tab.
+  workflow_dispatch:
+
+jobs:
+  move_issues:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Move items to next iteration
+        uses: actions/move-to-next-iteration@v1
+        with:
+          # --- REQUIRED INPUTS ---
+          # The owner (org or user) of the project
+          owner: 'Ajinkyamoghe123'
+          # The project board number (from the URL)
+          number: 1 
+          # The secret token we stored earlier
+          token: ${{ secrets.PPROJECT_AUTOMATION_PAT }}
+          # The exact name of your iteration field (e.g., 'Sprint')
+          iteration-field: 'iteration' 
+          
+          # --- OPTIONAL INPUTS ---
+          # How to find the new iteration: 'next' automatically finds the next available one.
+          new-iteration: 'next'
+          # A comma-separated list of status values to move. Must match your field exactly.
+          statuses: 'Open,In Progress'
