@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Move items to next iteration
-        uses: actions/move-to-next-iteration@v1
+        uses: blombard/move-to-next-iteration@v0.6.1
         with:
           # --- REQUIRED INPUTS ---
           # The owner (org or user) of the project
@@ -23,7 +23,7 @@ jobs:
           # The project board number (from the URL)
           number: 1 
           # The secret token we stored earlier
-          token: ${{ secrets.PPROJECT_AUTOMATION_PAT }}
+          token: ${{ secrets.PROJECT_AUTOMATION_PAT }}
           # The exact name of your iteration field (e.g., 'Sprint')
           iteration-field: 'iteration' 
           
