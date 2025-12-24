@@ -1,0 +1,66 @@
+name: "Debug project v2"
+
+on:
+  workflow_dispatch:
+
+jobs:
+  debug-project-v2:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check secret exists
+        shell: bash
+        run: |
+          if [ -z "${{ secrets.PROJECT_AUTOMATION_PAT }}" ]; then
+            echo "ERROR: secret PROJECT_AUTOMATION_PAT is missing. Add it and re-run."
+            exit 1
+          fi
+      - name: Query projectV2 via GraphQL
+        env:
+          GH_TOKEN: ${{ secrets.PROJECT_AUTOMATION_PAT }}
+        run: |
+          echo "Running GraphQL query for user projectV2 number 1..."
+          read -r -d '' QUERY <<'GRAPHQL'
+          {
+            user(login: "Ajinkyamoghe123") {
+              projectV2(number: 1) {
+                id
+                number
+                title
+                isArchived
+                fields(first: 50) {
+                  nodes {
+                    id
+                    name
+                    dataType
+                    settings
+                  }
+                }
+                items(first: 100) {
+                  nodes {
+                    id
+                    type
+                    content {
+                      __typename
+                      ... on Issue {
+                        id
+                        number
+                        title
+                        url
+                      }
+                      ... on DraftIssue {
+                        id
+                        title
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+GRAPHQL
+
+          echo "POSTing to https://api.github.com/graphql ..."
+          curl -s -X POST -H "Authorization: bearer $GH_TOKEN" -H "Content-Type: application/json" \
+            -d "{\"query\": $(jq -Rs . <<< \"$QUERY\")}" https://api.github.com/graphql | jq .
+
+          echo "Done."
