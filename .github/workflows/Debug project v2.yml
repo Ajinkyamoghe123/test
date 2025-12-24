@@ -18,48 +18,12 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.PROJECT_AUTOMATION_PAT }}
         run: |
-          echo "Preparing GraphQL payload..."
-          python - <<'PY' > payload.json
-import json
-QUERY = """{
-  user(login: "Ajinkyamoghe123") {
-    projectV2(number: 1) {
-      id
-      number
-      title
-      isArchived
-      fields(first: 50) {
-        nodes {
-          id
-          name
-          dataType
-          settings
-        }
-      }
-      items(first: 100) {
-        nodes {
-          id
-          type
-          content {
-            __typename
-            ... on Issue {
-              id
-              number
-              title
-              url
-            }
-            ... on DraftIssue {
-              id
-              title
-            }
-          }
-        }
-      }
-    }
-  }
-}"""
-print(json.dumps({"query": QUERY}))
-PY
-          echo "POSTing to GraphQL..."
-          curl -s -H "Authorization: bearer $GH_TOKEN" -H "Content-Type: application/json" -d @payload.json https://api.github.com/graphql | python -m json.tool
+          # Build GraphQL payload
+          cat > payload.json <<'GRAPHQL'
+{"query":"{ user(login: \"Ajinkyamoghe123\") { projectV2(number: 1) { id number title isArchived fields(first: 50) { nodes { id name dataType settings } } items(first: 100) { nodes { id type content { __typename ... on Issue { id number title url } ... on DraftIssue { id title } } } } } } }"}
+GRAPHQL
+
+          # POST to GraphQL and pretty-print JSON
+          curl -s -H "Authorization: bearer $GH_TOKEN" -H "Content-Type: application/json" -d @payload.json https://api.github.com/graphql | python -m json.tool || true
+
           echo "Done."
