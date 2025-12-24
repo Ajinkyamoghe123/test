@@ -7,11 +7,10 @@ on:
     - cron: '*/5 * * * *'
   workflow_dispatch:
 
-# Give the job explicit permissions (repository-level).
+# Give the job explicit permissions that are valid.
 permissions:
   contents: read
   issues: write
-  projects: write
 
 jobs:
   move_issues:
