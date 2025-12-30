@@ -13,7 +13,7 @@ jobs:
     steps:
     - uses: blombard/move-to-next-iteration@master
       with:
-        owner: WorkflowsCreator
+        owner: Ajinkyamoghe123
         number: 2
         token: ${{ secrets.PROJECT_PAT }}
         iteration-field: Sprint
