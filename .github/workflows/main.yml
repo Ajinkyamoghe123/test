@@ -14,7 +14,7 @@ jobs:
     - uses: blombard/move-to-next-iteration@master
       with:
         owner: WorkflowsCreator
-        number: 1
+        number: 2
         token: ${{ secrets.PROJECT_PAT }}
         iteration-field: Sprint
         iteration: last
