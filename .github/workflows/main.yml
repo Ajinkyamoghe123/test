@@ -1,13 +1,15 @@
+name: Project Iteration Management  # This shows in the Actions sidebar
+run-name: "Move items to next iteration - ${{ github.event.schedule }}" # This shows in the run list
+
 on:
   schedule:
-    # Runs "at 05:00, only on Monday" (see https://crontab.guru)
-    - cron: '0 5 * * 1'
+    - cron: '0 5 * * 1' # Runs at 05:00 on Monday
+  workflow_dispatch:   # Add this to test it manually right now!
 
 jobs:
   move-to-next-iteration:
     name: Move to next iteration
     runs-on: ubuntu-latest
-
     steps:
     - uses: blombard/move-to-next-iteration@master
       with:
