@@ -11,12 +11,12 @@ jobs:
     name: Move to next iteration
     runs-on: ubuntu-latest
     steps:
-    - uses: blombard/move-to-next-iteration@master
+    - uses: blombard/move-to-next-iteration@v0.6.1
       with:
         owner: Ajinkyamoghe123
         number: 2
         token: ${{ secrets.PROJECT_PAT }}
         iteration-field: Sprint
-        iteration: <=last
+        iteration: <@current
         new-iteration: current
         statuses: 'Todo,In Progress,In Review'
