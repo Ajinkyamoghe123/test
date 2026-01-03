@@ -18,5 +18,5 @@ jobs:
         token: ${{ secrets.PROJECT_PAT }}
         iteration-field: Sprint
         iteration: <@current
-        new-iteration: @current
+        new-iteration: current
         statuses: 'Todo,In Progress,In Review'
